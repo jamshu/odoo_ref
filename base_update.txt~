@@ -1,0 +1,11 @@
+Ghid Test Update BAse
+===================================
+Reason to update bAse
+
+Added a new field in res partner
+in odoo10 base module need to update when changes added
+
+sudo su - orchid -s /bin/bash
+cd /opt/oderp/ghid/test
+python odoo/odoo-bin --addons-path=/opt/oderp/ghid/test/odoo/odoo/addons,/opt/oderp/ghid/test/odoo/addons,/opt/oderp/ghid/test/orchid -d ghid_test -u all --db_host=128.199.66.121 --db_user=ghid --db_password=OrchidPWD
+

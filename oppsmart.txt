@@ -1,0 +1,4 @@
+opportunity
+expense
+expense draft
+journal and journal draft

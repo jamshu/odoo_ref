@@ -1,0 +1,52 @@
+<button class="oe_inline oe_stat_button" name="open_timesheets" type="object" attrs="{'invisible':[('use_timesheets','=', 0)]}" icon="fa-calendar" string="Timesheets"/>
+
+<record id="act_hr_timesheet_line_evry1_all_form" model="ir.actions.act_window">
+            <field name="name">Timesheet Activities</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hr.analytic.timesheet</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{"search_default_today":1}</field>
+            <field name="search_view_id" ref="hr_timesheet_line_search"/>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to record activities.
+              </p><p>
+                You can register and track your workings hours by project every
+                day. Every time spent on a project will become a cost in the
+                analytic accounting/contract and can be re-invoiced to
+                customers if required.
+              </p>
+            </field>
+        </record>
+ 
+ 
+ def open_timesheets(self, cr, uid, ids, context=None):
+        """ open Timesheets view """
+        mod_obj = self.pool.get('ir.model.data')
+        act_obj = self.pool.get('ir.actions.act_window')
+
+        project = self.browse(cr, uid, ids[0], context)
+        view_context = {
+            'search_default_account_id': [project.analytic_account_id.id],
+            'default_account_id': project.analytic_account_id.id,
+        }
+        help = _("""<p class="oe_view_nocontent_create">Record your timesheets for the project '%s'.</p>""") % (project.name,)
+        try:
+            if project.to_invoice and project.partner_id:
+                help+= _("""<p>Timesheets on this project may be invoiced to %s, according to the terms defined in the contract.</p>""" ) % (project.partner_id.name,)
+        except:
+            # if the user do not have access rights on the partner
+            pass
+
+        res = mod_obj.get_object_reference(cr, uid, 'hr_timesheet', 'act_hr_timesheet_line_evry1_all_form')
+        id = res and res[1] or False
+        result = act_obj.read(cr, uid, [id], context=context)[0]
+        result['name'] = _('Timesheets')
+        result['context'] = view_context
+        result['help'] = help
+        return result
+        
+hr_timesheet.hr_timesheet_line_tree
+
+domain="[('statge_id','not in',(6,7,8))]"

@@ -1,0 +1,7 @@
+ 1997  cd /usr/lib/python2.7/dist-packages/xlwt/
+ 1998  ls
+ 1999  sudo nano Row.py
+ line no 78 
+ set  if iarg>256
+  set iarg=255
+

@@ -1,0 +1,27 @@
+if context.get('periods'):
+            query_params['period_ids'] = tuple(context['periods'])
+            if initial_bal:
+                query = obj+".state <> 'draft' AND "+obj+".period_id IN (SELECT id FROM account_period WHERE fiscalyear_id IN %(fiscalyear_ids)s" + periods_special + ")" + where_move_state + where_move_lines_by_date
+                period_ids = fiscalperiod_obj.search(cr, uid, [('id', 'in', context['periods'])], order='date_start', limit=1)
+                if period_ids and period_ids[0]:
+                    first_period = fiscalperiod_obj.browse(cr, uid, period_ids[0], context=context)
+                    query_params['date_start'] = first_period.date_start
+                    query = obj+".state <> 'draft' AND "+obj+".period_id IN (SELECT id FROM account_period WHERE fiscalyear_id IN %(fiscalyear_ids)s AND date_start <= %(date_start)s AND id NOT IN %(period_ids)s" + periods_special + ")" + where_move_state + where_move_lines_by_date
+                    
+###################original#################33333
+in odoo/addons/account/account_move_line.py
+function                     
+def _query_get(self, cr, uid, obj='l', context=None
+
+
+line number 94
+period_ids = fiscalperiod_obj.search(cr, uid, [('id', 'in', context['periods'])], order='date_start', limit=1)
+change to 
+period_ids = fiscalperiod_obj.search(cr, uid, [('id', 'in', context['periods'])], order='date_start desc', limit=1)
+
+line number 98
+query = obj+".state <> 'draft' AND "+obj+".period_id IN (SELECT id FROM account_period WHERE fiscalyear_id IN %(fiscalyear_ids)s AND date_start <= %(date_start)s AND id NOT IN %(period_ids)s" + periods_special + ")" + where_move_state + where_move_lines_by_date
+change to
+
+query = obj+".state <> 'draft' AND "+obj+".period_id IN (SELECT id FROM account_period WHERE fiscalyear_id IN %(fiscalyear_ids)s AND date_start < %(date_start)s AND id IN %(period_ids)s" + periods_special + ")" + where_move_state + where_move_lines_by_date
+

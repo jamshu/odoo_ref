@@ -1,0 +1,20 @@
+selection_list = [
+            ('draft','Draft'),
+            ('proforma','Pro-forma'),
+            ('proforma2','Pro-forma'),
+            ('open','Open'),
+            ('paid','Done'),
+            ('cancel','Cancelled')]
+ 
+'state': fields.selection(selection_list,string="Status")
+state = fields.Selection(selection_list,string="Status")
+state = fields.Selection( [
+            ('draft','Draft'),
+            ('proforma','Pro-forma'),
+            ('proforma2','Pro-forma'),
+            ('open','Open'),
+            ('paid','Done'),
+            ('cancel','Cancelled')],string="Status")
+            
+            
+states={'draft':[('readonly',False)]}

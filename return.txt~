@@ -1,0 +1,83 @@
+ return {
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_model': 'individual.wiz',
+                'res_id':wiz_id,
+                'type': 'ir.actions.act_window',
+                'target': 'new',
+
+            }
+
+return {
+              'name': _('Analytic Entries by line'),
+              'view_type': 'form',
+              "view_mode": 'tree,form',
+              'res_model': 'account.analytic.line',
+              'type': 'ir.actions.act_window',
+              'domain': domain,
+              'search_view_id': id['res_id'],
+              
+
+}
+
+return {
+                    'res_id': ids[0],
+                    'view_id': [view_id],
+                    'view_type': 'form',
+                    "view_mode": 'form',
+                    'res_model': 'ir.model.fields.anonymize.wizard',
+                    'type': 'ir.actions.act_window',
+                    'context': {'step': 'just_desanonymized'},
+                    'target':'new',
+            }
+
+
+return {
+            'domain': "[('journal_id','=',%d), ('account_id','=',%d), ('state','<>','draft')]" % (data['journal_id'], account_id),
+            'name': _('Standard Encoding'),
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'account.move.line',
+            'view_id': False,
+            'context': "{'journal_id': %d}" % (data['journal_id'],),
+            'type': 'ir.actions.act_window'
+             }
+
+ return {
+            'domain': "[('id','in', ["+','.join(map(str,context['move_ids']))+"])]",
+            'name': 'Entries',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'account.move',
+            'views': [(False,'tree'),(resource_id,'form')],
+            'type': 'ir.actions.act_window',
+        }
+        
+def redirect_phonecall_view(self, cr, uid, phonecall_id, context=None):
+        model_data = self.pool.get('ir.model.data')
+        # Select the view
+        tree_view = model_data.get_object_reference(cr, uid, 'crm', 'crm_case_phone_tree_view')
+        form_view = model_data.get_object_reference(cr, uid, 'crm', 'crm_case_phone_form_view')
+        search_view = model_data.get_object_reference(cr, uid, 'crm', 'view_crm_case_phonecalls_filter')
+        value = {
+                'name': _('Phone Call'),
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                'res_model': 'crm.phonecall',
+                'res_id' : int(phonecall_id),
+                'views': [(form_view and form_view[1] or False, 'form'), (tree_view and tree_view[1] or False, 'tree'), (False, 'calendar')],
+                'type': 'ir.actions.act_window',
+                'search_view_id': search_view and search_view[1] or False,
+        }
+        return value
+
+return {
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_model': 'project.task',
+                'type': 'ir.actions.act_window',
+                'context':context,
+                'target': 'new',
+                'flags': {'form': {'action_buttons': True}}
+            }
+

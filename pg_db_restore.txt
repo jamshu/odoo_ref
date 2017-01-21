@@ -1,0 +1,14 @@
+pg_restore --cluster 9.3/main --no-acl -O -d beta_test < beta_Prod_2016-06-23_09-55-42.dump
+
+SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname ='pizza_live';
+
+sudo su - postgres
+psql
+CREATE DATABASE pizza_live WITH TEMPLATE template1 OWNER pizza;
+\q
+exit
+sudo su - postgres
+pg_restore --cluster 9.5/main --no-acl -O -d pizza_live < /home/orchid/pizza_live.dump
+
+
+

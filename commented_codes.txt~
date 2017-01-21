@@ -1,0 +1,224 @@
+
+    # @api.model
+    # def create(self,vals):
+    #     print "gn sales creation on progres>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+    #     pprint(vals)
+    #     return super(sale_order,self).create(vals)
+    # def fields_view_get(self, cr, uid, view_id=None, view_type='form', context=None, toolbar=False, submenu=False):
+    #     res = super(sale_order, self).fields_view_get(cr, uid, view_id=view_id, view_type=view_type, context=context, toolbar=toolbar, submenu=submenu)
+    #     if view_type == 'form':
+    #         doc = etree.XML(res['arch'])
+    #         for sheet in doc.xpath("//sheet"):
+    #             parent = sheet.getparent()
+    #         for child in sheet:
+    #             parent.append(child)
+    #         parent.remove(sheet)
+    #         res['arch'] = etree.tostring(doc)
+    #     return res
+    
+    # def onchange_partner_id(self, cr, uid, ids, partner_id, context=None):
+    #     values = super(project_project,self).onchange_partner_id(cr, uid, ids, partner_id, context=context)
+    #     if partner_id:
+    #         partner = self.pool.get('res.partner').browse(cr, uid, partner_id, context=context)
+    #         values['value'].update( {
+    #             'od_territory_id':partner.parent_id.od_territory_id.id if partner.parent_id else partner.od_territory_id.id or False
+    #         })
+    #     return values
+    
+    @api.multi
+    def btn_load_material(self):
+        """ This Function pull Material From This Tasks Parent Project """
+        mat_available = [] # we load available material from project to this array
+        project = self.project_id
+        for line in project.od_material_budget_line:
+            if line.balance:
+                mat_available.append({
+                    'product_id':line.product_id and line.product_id.id,
+                    'qty':line.balance
+                                })
+        self.od_material_request_line = mat_available
+        self.material_loaded = True
+        return {
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_model': 'project.task',
+                'res_id':self.id,
+                'type': 'ir.actions.act_window',
+
+                'target': 'new',
+                'flags': {'form': {'action_buttons': True}}
+            }
+            
+            
+            
+    @api.multi
+    def btn_request_material(self):
+        product_ob = self.env['product.product']
+        items = []
+        for line in self.od_material_request_line:
+            if not line.state == 'requested':
+                items.append({'product_id':line.product_id.id,'qty':line.qty})
+
+        datas = self.od_deduplicate(items)
+        for data in datas:
+            product_id = data['product_id']
+            qty = data['qty']
+            budget_line = self.project_id.od_material_budget_line
+            mat_budget = budget_line.search([('product_id','=',product_id)],limit=1)
+            balance = mat_budget.get_balance_qty()
+            product_name = product_ob.browse(product_id).name
+            if balance < qty:
+                raise Warning("Requested Product %s Balance is %s in this Project,You are Requesting %s"%(product_name,balance,qty))
+            old_qty = mat_budget.requested
+            mat_budget.requested = old_qty + qty
+        for line in self.od_material_request_line:
+            line.state = 'requested'
+
+    @api.multi
+    def od_delivery_order(self):
+        context = self._context
+        ctx = {'task_id':self.id}
+        ctx.update(context)
+        result = {
+              'view_type': 'form',
+              "view_mode": 'form',
+              'res_model': 'od.tsk.gen.picking.out',
+              'type': 'ir.actions.act_window',
+              'target': 'new',
+              'context': ctx
+              }
+        return result
+
+    @api.multi
+    def od_purchase_order(self):
+        result = {}
+        context = self._context
+        ctx = {'task_id':self.id}
+        print "task id>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",self.id
+        ctx.update(context)
+        purchase_id = self.od_purchase_id and self.od_purchase_id.id
+        if purchase_id:
+            result= {
+                    'res_id': purchase_id,
+                    'view_type': 'form',
+                    "view_mode": 'form',
+                    'res_model': 'purchase.order',
+                    'type': 'ir.actions.act_window',
+                    'context': context
+            }
+        else:
+            result = {
+                  'view_type': 'form',
+                  "view_mode": 'form',
+                  'res_model': 'od.tsk.gen.purchase',
+                  'type': 'ir.actions.act_window',
+                  'target': 'new',
+                  'context': ctx
+                  }
+        return  result
+        
+        
+
+    def od_deduplicate(self,l):
+        result = []
+        for item in l :
+            check = False
+            for r_item in result :
+                if item['product_id'] == r_item['product_id'] :
+                    check = True
+                    qty = r_item['qty']
+                    r_item['qty'] = qty + item['qty']
+            if check == False :
+                result.append( item )
+
+        return result
+
+    #
+    # @api.constrains('work_ids')
+    # def check_depend_task(self):
+    #     def rec_check(data):
+    #         for child in data:
+    #             if child.od_type == 'activities':
+    #                 for line in child.work_ids:
+    #                     if line.state != 'completed':
+    #                         raise Warning("Dependent Task Not Completed \n Please Check The Dependent Task Activities")
+    #             else:
+    #                 for dat in child.od_child_ids:
+    #                     rec_check(dat)
+    #
+    #     def rec_check_parent(parent_data):
+    #         for data in parent_data:
+    #             if data.od_depend_id and data.od_condition == 'end':
+    #                 rec_check(data.od_depend_id)
+    #             if data.od_parent_id:
+    #                 rec_check_parent(data.od_parent_id)
+    #
+    #     if self.od_depend_id:
+    #         rec_check(self.od_depend_id)
+    #
+    #     if self.od_parent_id:
+    #         rec_check_parent(self.od_parent_id)
+
+# if self.od_type == 'activities' and self.date_deadline:
+            #     date_deadline,time = self.date_deadline.split(' ')
+            #     if not (parent_date_end >= date_deadline >= parent_date_start):
+            #
+            #         raise Warning("Child Task Date Should be Under Parent task Scheduled Date\n Check Date")
+
+    # def update_date_deadline(self):
+    #     if self.od_type == 'activities':
+    #         self.date_deadline = self.date_start
+    # @api.one
+    # @api.depends('date_deadline','planned_hours')
+    # def _get_od_end_date(self):
+    #     """Compute the End date"""
+    #     res = {}
+    #     for order in self:
+    #         if order.date_deadline:
+    #             date_deadline = datetime.strptime(order.date_deadline, DEFAULT_SERVER_DATETIME_FORMAT)
+    #             dt = date_deadline + timedelta(hours=order.planned_hours or 0.0)
+    #             dt_s = dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+    #             res[order.id] = dt_s
+    #             self.od_end_time = dt_s
+    #
+    #             if self.od_type == 'activities':
+    #
+    #                 date_start = datetime.strptime(order.date_start, DEFAULT_SERVER_DATETIME_FORMAT)
+    #                 dt_e = date_start + timedelta(hours=order.planned_hours or 0.0)
+    #                 dt_end = dt_e.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+    #
+    #                 self.date_end = dt_end
+
+
+    # @api.onchange('date_start','planned_hours')
+    # def onchange_start_planned(self):
+    #     print "this is caliing this onchangee>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+    #     if self.od_type == 'activities':
+    #         date_start = datetime.strptime(self.date_start, DEFAULT_SERVER_DATETIME_FORMAT)
+    #         dt_e = date_start + timedelta(hours=self.planned_hours or 0.0)
+    #         dt_end = dt_e.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+    #         self.date_end = dt_end
+
+
+
+
+
+
+    # @api.one
+    # @api.depends('od_child_ids')
+    # def _get_total_plan(self):
+    #
+    #
+    #         res = self.check_task_cycle(self)
+    #         plan_time =0.0
+    #         for val in res:
+    #             plan_time += val.planned_hours
+    #         self.od_total_planned = plan_time
+# @api.one
+    # @api.depends('od_purchase_id')
+    # def od_get_count_purchase(self):
+    #     if self.od_purchase_id:
+    #         self.od_purchase_count = 1
+    #     else:
+    #         self.od_purchase_count = 0
+

@@ -1,0 +1,215 @@
+    <xpath expr="//div[@name=&quot;buttons&quot;]" position="inside">
+              <button name="od_btn_open_invoice_lines" type="object" class="oe_stat_button"  icon="fa-pencil-square-o"  >
+                        <div><strong><field name="od_amnt_invoiced" /></strong><br/>Invoiced</div>
+            </button>
+             <button name="od_btn_open_invoice_lines" type="object" class="oe_stat_button"  icon="fa-pencil-square-o"  >
+                       <div><strong><field name="od_amnt_purchased" /></strong><br/>Supplier PO's</div>
+             </button>
+    </xpath>
+    
+      <button class="oe_inline oe_stat_button" type="object" context="{'partner_id': partner_id}" name="action_schedule_meeting" icon="fa-calendar">
+                                <field string="Meetings" name="meeting_count" widget="statinfo"/>
+                            </button>
+                            
+                            
+
+<xpath expr='//div[@name="buttons"]' position='inside'>
+                    <button class="oe_inline oe_stat_button" type="action" name="%(act_analytic_cost_revenue)d" 
+                        icon="fa-usd"  string="Cost/Revenue" widget="statinfo"/>
+                </xpath>
+                
+ 
+ <record model="ir.actions.act_window" id="act_analytic_cost_revenue">
+            <field name="context">{'search_default_group_date': 1, 'search_default_group_journal': 1}</field>
+            <field name="domain">[('account_id','child_of', active_id)]</field>
+            <field name="name">Costs &amp; Revenues</field>
+            <field name="res_model">account.analytic.line</field>
+            <field name="src_model">account.analytic.account</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_type">form</field>
+            <field name="help" type="html">
+              <p>
+                No activity yet on this contract.
+              </p><p>
+                In Odoo, contracts and projects are implemented using
+                analytic account. So, you can track costs and revenues to analyse
+                your margins easily.
+              </p><p>
+                Costs will be created automatically when you register supplier
+                invoices, expenses or timesheets.
+              </p><p>
+                Revenues will be created automatically when you create customer
+                invoices. Customer invoices can be created based on sale orders
+                (fixed price invoices), on timesheets (based on the work done) or
+                on expenses (e.g. reinvoicing of travel costs).
+              </p>
+            </field>
+        </record>
+
+@api.multi
+    def od_btn_open_invoice_lines(self):
+        analytic_id = self.analytic_account_id and self.analytic_account_id.id or False
+        print "analytic_id>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",analytic_id
+        domain = [('account_id','child_of',analytic_id)]
+        return {
+            'domain':domain,
+            'context':{'search_default_group_date': 1, 'search_default_group_journal': 1},
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'account.analytic.line',
+            'type': 'ir.actions.act_window',
+        }
+        
+        
+'STOCK_ABOUT',
+'STOCK_ADD',
+'STOCK_APPLY',
+'STOCK_BOLD',
+'STOCK_CANCEL',
+'STOCK_CDROM',
+'STOCK_CLEAR',
+'STOCK_CLOSE',
+'STOCK_COLOR_PICKER',
+'STOCK_CONNECT',
+'STOCK_CONVERT',
+'STOCK_COPY',
+'STOCK_CUT',
+'STOCK_DELETE',
+'STOCK_DIALOG_AUTHENTICATION',
+'STOCK_DIALOG_ERROR',
+'STOCK_DIALOG_INFO',
+'STOCK_DIALOG_QUESTION',
+'STOCK_DIALOG_WARNING',
+'STOCK_DIRECTORY',
+'STOCK_DISCONNECT',
+'STOCK_DND',
+'STOCK_DND_MULTIPLE',
+'STOCK_EDIT',
+'STOCK_EXECUTE',
+'STOCK_FILE',
+'STOCK_FIND',
+'STOCK_FIND_AND_REPLACE',
+'STOCK_FLOPPY',
+'STOCK_GOTO_BOTTOM',
+'STOCK_GOTO_FIRST',
+'STOCK_GOTO_LAST',
+'STOCK_GOTO_TOP',
+'STOCK_GO_BACK',
+'STOCK_GO_DOWN',
+'STOCK_GO_FORWARD',
+'STOCK_GO_UP',
+'STOCK_HARDDISK',
+'STOCK_HELP',
+'STOCK_HOME',
+'STOCK_INDENT',
+'STOCK_INDEX',
+'STOCK_ITALIC',
+'STOCK_JUMP_TO',
+'STOCK_JUSTIFY_CENTER',
+'STOCK_JUSTIFY_FILL',
+'STOCK_JUSTIFY_LEFT',
+'STOCK_JUSTIFY_RIGHT',
+'STOCK_MEDIA_FORWARD',
+'STOCK_MEDIA_NEXT',
+'STOCK_MEDIA_PAUSE',
+'STOCK_MEDIA_PLAY',
+'STOCK_MEDIA_PREVIOUS',
+'STOCK_MEDIA_RECORD',
+'STOCK_MEDIA_REWIND',
+'STOCK_MEDIA_STOP',
+'STOCK_MISSING_IMAGE',
+'STOCK_NETWORK',
+'STOCK_NEW',
+'STOCK_NO',
+'STOCK_OK',
+'STOCK_OPEN',
+'STOCK_PASTE',
+'STOCK_PREFERENCES',
+'STOCK_PRINT',
+'STOCK_PRINT_PREVIEW',
+'STOCK_PROPERTIES',
+'STOCK_QUIT',
+'STOCK_REDO',
+'STOCK_REFRESH',
+'STOCK_REMOVE',
+'STOCK_REVERT_TO_SAVED',
+'STOCK_SAVE',
+'STOCK_SAVE_AS',
+'STOCK_SELECT_COLOR',
+'STOCK_SELECT_FONT',
+'STOCK_SORT_ASCENDING',
+'STOCK_SORT_DESCENDING',
+'STOCK_SPELL_CHECK',
+'STOCK_STOP',
+'STOCK_STRIKETHROUGH',
+'STOCK_UNDELETE',
+'STOCK_UNDERLINE',
+'STOCK_UNDO',
+'STOCK_UNINDENT',
+'STOCK_YES',
+'STOCK_ZOOM_100',
+'STOCK_ZOOM_FIT',
+'STOCK_ZOOM_IN',
+'STOCK_ZOOM_OUT',
+'terp-account',
+'terp-crm',
+'terp-mrp',
+'terp-product',
+'terp-purchase',
+'terp-sale',
+'terp-tools',
+'terp-administration',
+'terp-hr',
+'terp-partner',
+'terp-project',
+'terp-report',
+'terp-stock',
+'terp-calendar',
+'terp-graph',
+'terp-check',
+'terp-go-month',
+'terp-go-year',
+'terp-go-today',
+'terp-document-new',
+'terp-camera_test',
+'terp-emblem-important',
+'terp-gtk-media-pause',
+'terp-gtk-stop',
+'terp-gnome-cpu-frequency-applet+',
+'terp-dialog-close',
+'terp-gtk-jump-to-rtl',
+'terp-gtk-jump-to-ltr',
+'terp-accessories-archiver',
+'terp-stock_align_left_24',
+'terp-stock_effects-object-colorize',
+'terp-go-home',
+'terp-gtk-go-back-rtl',
+'terp-gtk-go-back-ltr',
+'terp-personal',
+'terp-personal-',
+'terp-personal+',
+'terp-accessories-archiver-minus',
+'terp-accessories-archiver+',
+'terp-stock_symbol-selection',
+'terp-call-start',
+'terp-dolar',
+'terp-face-plain',
+'terp-folder-blue',
+'terp-folder-green',
+'terp-folder-orange',
+'terp-folder-yellow',
+'terp-gdu-smart-failing',
+'terp-go-week',
+'terp-gtk-select-all',
+'terp-locked',
+'terp-mail-forward',
+'terp-mail-message-new',
+'terp-mail-replied',
+'terp-rating-rated',
+'terp-stage',
+'terp-stock_format-scientific',
+'terp-dolar_ok!',
+'terp-idea',
+'terp-stock_format-default',
+'terp-mail-',
+'terp-mail_delete'

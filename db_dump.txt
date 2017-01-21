@@ -1,0 +1,2 @@
+Dumping (Backup ) from server through terminal
+ssh admin@188.166.234.220 "pg_dump --cluster 9.5/main --format=c -U orchiderp foodtech_live" > /tmp/foodtech.dump

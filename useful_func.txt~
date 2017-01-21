@@ -1,0 +1,303 @@
+# -*- coding: utf-8 -*-
+
+   <field name="work_ids" groups="project.group_tasks_work_on_tasks" context="{'default_user_id':user_id}" >
+
+
+for pdf report refer orchid_trend_report in orchid_acc_report module
+
+python odoo/openerp-server -c gsf.conf -s 
+
+ <tree colors="blue:state == 'draft';black:state in ('proforma','proforma2','open');gray:state == 'cancel'" string="Invoice">
+tree colors="blue:state == 'draft';gray:state == 'done' " string="Period">
+
+ <tree string="Account Move line" editable="bottom" create="false" delete="false" colors="red:(not date_maturity or date_maturity&lt;=current_date) and result&gt;0">
+
+period_obj = self.env['account.period']
+period_ids = period_obj.find(date).id
+
+action
+
+     <record model="ir.actions.act_window" id="action_biometric_data_tree_view">
+                <field name="name">Attendance Data</field>
+                <field name="type">ir.actions.act_window</field>
+                <field name="res_model">biometric.data</field>
+                <field name="view_type">form</field>
+                <field name="view_mode">tree,form</field>
+                <field name="view_id" ref="biometric_data_tree_view"/>
+            </record>
+
+
+
+
+Server Action
+#new_ids=self.search(cr,uid,[('state','=','draft')])
+new_ids = context.get('active_ids')
+for id in new_ids:
+    self.od_confirm(cr,uid,[id],context)
+    self.compute_installment_amt(cr,uid,[id],context)
+    self.od_reserve(cr,uid,[id],context)
+    
+ 
+ 	   <label for="od_is_pd_comp"/>
+            <div>
+             <div class="address_format">
+              <field name="od_is_pd_comp"  style="width: 30%" a/>
+              <field name="od_cmp_pd_amt"  placeholder="Mobile" style="width: 70" />
+            </div>
+          </div>
+					
+ 	  
+ 	  
+ 	  <record id="action_portal_voucher_orchid_tree" model="ir.actions.act_window.view">
+           <field name="view_mode">tree</field>
+           <field name="view_id" ref="account_voucher_portal_tree_view"/>
+           <field name="act_window_id" ref="action_account_voucher_portal_tree_view"/>
+       </record>
+
+    
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+
+ 
+
+    <record id="view_partner_bank_form_inherit" model="ir.ui.view">
+        <field name="name">Partner Bank Accounts - Journal</field>
+        <field name="model">res.partner.bank</field>
+        <field name="inherit_id" ref="base.view_partner_bank_form"/>
+        <field name="arch" type="xml">
+            <group name="bank" position="after">
+                <group name="accounting" col="2" colspan="2" attrs="{'invisible': [('company_id','=', False)]}">
+                    <separator string="Accounting Information" colspan="2"/>
+                    <field name="journal_id"/>
+                    <field name="currency_id" groups="base.group_multi_currency"/>
+                </group>
+            </group>
+        </field>
+    </record>
+
+
+  
+
+</data>
+</openerp>
+
+ <xpath expr="//field[@name='order_line']/form//field[@name='tax_id']" position="after">
+               <field name="analytics_id" domain="[('plan_id','&lt;&gt;',False)]" groups="analytic.group_analytic_accounting"/>
+           </xpath>
+
+
+Search View
+
+
+ <record id="view_account_analytic_account_search" model="ir.ui.view">
+            <field name="name">account.analytic.account.search</field>
+            <field name="model">account.analytic.account</field>
+            <field name="arch" type="xml">
+                <search string="Analytic Account">
+                    <field name="name" filter_domain="['|', ('name','ilike',self), ('code','ilike',self)]" string="Analytic Account"/>
+                    <field name="date"/>
+                    <field name="partner_id" operator="child_of"/>
+                    <field name="manager_id"/>
+                    <field name="parent_id"/>
+                    <field name="user_id"/>
+                    <filter string="Open" domain="[('state','=','open')]" help="Current Accounts"/>
+                    <filter string="Pending" domain="[('state','=','pending')]" help="Pending Accounts"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Associated Partner" domain="[]" context="{'group_by':'partner_id'}"/>
+                        <filter string="Type" domain="[]" context="{'group_by':'type'}"/>
+                        <filter string="Template" domain="[]" context="{'group_by':'template_id'}"/>
+                        <filter string="Parent Account" domain="[]" context="{'group_by':'parent_id'}"/>
+                        <filter string="Status" domain="[]" context="{'group_by':'state'}" groups="base.group_no_one"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        
+        
+ Action 
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++        
+    <record model="ir.actions.act_window" id="od_job_order_action">
+        <field name="name">Job Order</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">od.job.order</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,graph</field>
+          <field name="context">{'search_default_pending':1}</field>
+         <field name="help" type="html">
+          <p class="oe_view_nocontent_create">
+            Click to add new Job Order. 
+          </p>
+        </field>
+    </record>
+
+
+
+
+def name_get(self, cr, uid, ids, context=None):
+        if not ids:
+            return []
+        reads = self.read(cr, uid, ids, ['name','code'], context=context)
+        res = []
+        for record in reads:
+            name = record['name']
+            if record['code']:
+                name = record['code']+' '+name
+            res.append((record['id'],name ))
+        return res
+
+    def name_search(self, cr, user, name, args=None, operator='ilike', context=None, limit=80):
+        if args is None:
+            args = []
+        if operator in expression.NEGATIVE_TERM_OPERATORS:
+            domain = [('code', operator, name), ('name', operator, name)]
+        else:
+            domain = ['|', ('code', operator, name), ('name', operator, name)]
+        ids = self.search(cr, user, expression.AND([domain, args]), limit=limit, context=context)
+        return self.name_get(cr, user, ids, context=context)
+
+'usage': fields.selection([
+                        ('supplier', 'Supplier Location'),
+                        ('view', 'View'),
+                        ('internal', 'Internal Location'),
+                        ('customer', 'Customer Location'),
+                        ('inventory', 'Inventory'),
+                        ('procurement', 'Procurement'),
+                        ('production', 'Production'),
+                        ('transit', 'Transit Location')],
+                'Location Type'),
+states={'done':[('readonly',True)]},
+states={'draft':[('readonly',False)]}
+
+<field name="state" widget="statusbar" statusbar_visible="draft,open,paid" statusbar_colors='{"proforma":"blue","proforma2":"blue"}'/>
+
+date = fields.Date.context_today(self)
+date = fields.Date(string="Date",default=fields.Date.context_today)
+'account_id': fields.many2one('account.account', 'Account', ondelete='cascade', domain=[('type', 'not in', ('view', 'closed', 'consolidation'))]),
+
+datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+date = fields.Datetime(string="Date",default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+ days_diff = (datetime.datetime.strptime(considering_date_end, '%Y-%m-%d') - datetime.datetime.strptime(str(considering_date_start), '%Y-%m-%d')).days + 1
+def get_id_from_param(self,param):
+        parameter_obj = self.env['ir.config_parameter']
+        key =[('key', '=', param)]
+        param_obj = parameter_obj.search(key)
+        if not param_obj:
+            raise Warning(_('Settings Warning!'),_('NoParameter Not defined\nconfig it in System Parameters with %s'%param))
+        result_id = param_obj.od_model_id and param_obj.od_model_id.id or False
+        return result_id
+        
+        
+
+    def get_value_from_param(self,param):
+        parameter_obj = self.env['ir.config_parameter']
+        key =[('key', '=', param)]
+        param_obj = parameter_obj.search(key)
+        if not param_obj:
+            raise Warning(_('Settings Warning!'),_('NoParameter Not defined\nconfig it in System Parameters with %s'%param))
+        result = param_obj.value
+        return result
+        
+def get_id_from_param(self,cr,uid,ids,param=None,context=None):
+
+        parameter_obj = self.pool.get('ir.config_parameter')
+        key =[('key', '=', param)]
+        param_id = parameter_obj.search(cr,uid,key,limit=1)
+        if not param_id:
+            raise Warning(_('Settings Warning!'),_('NoParameter Not defined\nconfig it in System Parameters with %s'%param))
+        param_obj = parameter_obj.browse(cr,uid,param_id)
+        result_id = param_obj.od_model_id and param_obj.od_model_id.id or False
+        return result_id
+        
+        
+#Dates>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+        in_date = datetime.strptime(date_time, DEFAULT_SERVER_DATETIME_FORMAT) # convert string date to date ojbect
+        in_date_local = in_date + timedelta(hours=4)
+        in_date_str = datetime.strftime(in_date_local, DEFAULT_SERVER_DATETIME_FORMAT) # convert date object to string
+        in_time = in_date_str[10:]
+
+
+def daterange(d1, d2):
+    return (d1 + timedelta(days=i) for i in range((d2 - d1).days + 1))
+        
+import datetime
+from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
+from openerp import tools
+def str_to_datetime(strdate):
+    return datetime.datetime.strptime(strdate, tools.DEFAULT_SERVER_DATE_FORMAT)
+    
+    
+def od_send_mail_old_api(self,cr,uid,ids,template):
+        print "trying to send mail"
+        ir_model_data = self.pool['ir.model.data']
+        email_obj = self.pool.get('email.template')
+        template_id = ir_model_data.get_object_reference(cr,uid,'orchid_designer', template)[1]
+        print "emila temlp id>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",template_id
+        email_obj.send_mail(cr,uid,template_id,ids[0], force_send=True)
+        return True
+
+def od_send_mail(self,template):
+        ir_model_data = self.env['ir.model.data']
+        email_obj = self.pool.get('email.template')
+        template_id = ir_model_data.get_object_reference('orchid_shared_office', template)[1]
+        record_id = self.id
+        email_obj.send_mail(self.env.cr,self.env.uid,template_id,record_id, force_send=True)
+        return True
+def days_between(d1, d2):
+    d1 = datetime.strptime(d1, "%Y-%m-%d")
+    d2 = datetime.strptime(d2, "%Y-%m-%d")
+    return abs((d2 - d1).days)
+def get_time_diff(self,start_time,complete_time):
+        start_time = datetime.strptime(start_time, DEFAULT_SERVER_DATETIME_FORMAT)
+        complete_time = datetime.strptime(complete_time, DEFAULT_SERVER_DATETIME_FORMAT)
+        diff = (complete_time -start_time)
+        days = diff.days * 24
+        seconds = diff.seconds
+        hour= days + float(seconds)/3600
+        return hour
+    
+    <td><a href="${ctx["base_url"]}/#action=${ctx["action_id"]}&id=${account.id}&view_type=form">${account.name}</a></td>
+    
+def od_send_purchase_confirmation_mail(self,cr,uid,ids,context=None):
+        data = self.browse(cr,uid,ids,context=context)
+        company_id = data.company_id and data.company_id.id
+        template = 'od_purchase_order_confirmed_email_mail'
+        if company_id == 6:
+            template = template + '_saudi'
+        template_id = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'orchid_beta', template)[1]
+        print "going to send email for purchase confirmation >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>company_id>>>>tempalte_id",company_id,template_id
+        self.pool.get('email.template').send_mail(cr, uid, template_id, uid, force_send=True, context=context)
+        
+
+
+    def _prepare_order_line_move(self,product_id,product_qty,uom_id,location_id,location_dest_id):
+        '''   prepare the stock move data'''
+
+        move_template = {
+            'name': self.name or '',
+            'product_id': product_id,
+            'product_uom_qty':product_qty,
+            'product_uom':uom_id,
+            'date': self.date,
+            'date_expected': self.delivery_date + ' 04:00:00',
+            'location_id': location_id,
+            'location_dest_id':location_dest_id ,
+            'partner_id': self.partner_id and self.partner_id.id or False,
+            'move_dest_id': False,
+            'state': 'draft',
+            'od_job_order_id':self.id,
+            'procurement_id': False,
+            'origin': self.name,
+            'invoice_state': 'none',
+        }
+        return move_template
+#     
+    def create_stock_moves(self,product_id,product_qty,uom_id,location_id,location_dest_id):
+        """
+         create stock move
+        """
+        stock_move = self.env['stock.move']
+        vals =self._prepare_order_line_move(product_id,product_qty,uom_id,location_id,location_dest_id)
+        move = stock_move.create(vals)
+        return move

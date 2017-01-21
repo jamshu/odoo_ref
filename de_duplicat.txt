@@ -1,0 +1,18 @@
+def od_deduplicate(self,l):
+        result = []
+        for item in l :
+            check = False
+            # check item, is it exist in result yet (r_item)
+            for r_item in result :
+                if item['product_id'] == r_item['product_id'] :
+                    # if found, add all key to r_item ( previous record)
+                    check = True
+                    lines = r_item['lines'] 
+                    for line in item['lines']:
+                        lines.append(line)
+                    r_item['lines'] = lines
+            if check == False :
+                # if not found, add item to result (new record)
+                result.append( item )
+    
+        return result

@@ -1,0 +1,20 @@
+def od_get_company_id(self):
+		return self.env.user.company_id
+	company_id = fields.Many2one('res.company', string='Company',default=od_get_company_id,readonly=True)
+
+
+
+
+
+
+def _get_default_company(self, cr, uid, context=None):
+        company_id = self.pool.get('res.users')._get_company(cr, uid, context=context)
+        if not company_id:
+            raise osv.except_osv(_('Error!'), _('There is no default company for the current user!'))
+        return company_id
+_columns={ 
+'company_id': fields.many2one('res.company','Company'),
+}
+_defaults ={
+    'company_id': _get_default_company,
+}

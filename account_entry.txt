@@ -1,0 +1,60 @@
+    @api.one
+    def create_move(self):
+        period_obj = self.env['account.period']
+        move_obj = self.env['account.move']
+        date = self.date
+        period_ids = period_obj.find(date).id
+        ref = self.name
+        journal_id = self.journal_id and self.journal_id.id
+        debit_account = self.wip_account_id.id
+        credit_account = self.expense_account_id.id
+        actual = self.actual
+        move_lines =[]
+
+        for line in self.labour_line:
+            partner_id = line.partner_id.id
+            amount = line.amount
+            if actual:
+                amount = line.actual_amount
+            vals1={
+                'name': ref,
+                'ref': ref,
+                'period_id': period_ids ,
+                'journal_id': journal_id,
+                'date': date,
+                'account_id': credit_account,
+                'debit': 0.0,
+                'credit': abs(amount),
+                'partner_id': partner_id,
+                'analytic_account_id': line.project_id.id,
+
+            }
+            vals2={
+                'name': ref,
+                'ref': ref,
+                'period_id': period_ids ,
+                'journal_id': journal_id,
+                'date': date,
+                'account_id': debit_account,
+                'credit': 0.0,
+                'debit': abs(amount),
+                'partner_id': partner_id,
+                'analytic_account_id': line.project_id.id,
+
+            }
+            move_lines.append([0,0,vals1])
+            move_lines.append([0,0,vals2])
+            line.state = 'done'
+        move_vals = {
+
+                'date': date,
+                'ref': ref,
+                'period_id': period_ids ,
+                'journal_id': journal_id,
+                'line_id':move_lines
+
+                }
+        move_id = move_obj.create(move_vals).id
+        self.move = move_id
+        self.state = 'done'
+        return True

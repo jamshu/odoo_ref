@@ -1,0 +1,12 @@
+python odoo/openerp-server -c  new_asn.conf -s
+=====================================================================
+crontab jobs for starting postgresql server restart at 1 am
+ssh into server
+crontab -e
+0 1 * * * echo FT@1234 | sudo -S service postgresql restart
+=====================================================================
+
+ssh-keygen -t rsa
+Then use this command to push the key to the remote server, modifying it to match your server name.
+
+cat ~/.ssh/id_rsa.pub | ssh user@hostname 'cat >> .ssh/authorized_keys'
