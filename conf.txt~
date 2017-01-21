@@ -1,2 +1,0 @@
-chown hiphone:hiphone 001-hiphone-live-server1.conf
-chown 755 /etc/001-hiphone-live-server1.conf
