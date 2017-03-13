@@ -3,4 +3,19 @@ git init
 git add README.md
 git commit -m "first commit"
 git remote add origin https://github.com/jamshu/test1.git
+git remote add origin git@orchiderp.com:/opt/git/orchid_addons/orchid_somfy.git
+
+
+echo '*.pyc' >> .gitignore
+
+git rm --cached -r .
+
 git push -u origin master
+git remote set-url origin git@github.com:USERNAME/OTHERREPOSITORY.git
+
+
+
+find . -name "*.pyc" -exec git rm -f {} \;
+
+Then, add a .gitignore file in the root of your repo and enter a line:
+*.pyc

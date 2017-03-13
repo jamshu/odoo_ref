@@ -1,0 +1,9 @@
+sudo su postgres
+psql
+
+\du
+ALTER USER yourusername WITH PASSWORD 'yournewpass';
+
+---------------------------------------
+
+psql -h <host> -p <port> -U <username> -W <database>

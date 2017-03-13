@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+  
+  
+  <xpath expr="//notebook[last()]" position="inside">
+  
    <field name="work_ids" groups="project.group_tasks_work_on_tasks" context="{'default_user_id':user_id}" >
 
 
@@ -7,6 +11,20 @@ for pdf report refer orchid_trend_report in orchid_acc_report module
 
 python odoo/openerp-server -c gsf.conf -s 
 
+ 
+ 
+ 
+ 
+ def days_between(self,d1, d2):
+        from datetime import datetime
+        d1 = datetime.strptime(d1, "%Y-%m-%d")
+        d2 = datetime.strptime(d2, "%Y-%m-%d")
+        return abs((d2 - d1).days)+1
+ 
+ 
+ 
+ 
+ 
  <tree colors="blue:state == 'draft';black:state in ('proforma','proforma2','open');gray:state == 'cancel'" string="Invoice">
 tree colors="blue:state == 'draft';gray:state == 'done' " string="Period">
 
@@ -172,6 +190,7 @@ states={'draft':[('readonly',False)]}
 <field name="state" widget="statusbar" statusbar_visible="draft,open,paid" statusbar_colors='{"proforma":"blue","proforma2":"blue"}'/>
 
 date = fields.Date.context_today(self)
+date = fields.Date.today()
 date = fields.Date(string="Date",default=fields.Date.context_today)
 'account_id': fields.many2one('account.account', 'Account', ondelete='cascade', domain=[('type', 'not in', ('view', 'closed', 'consolidation'))]),
 

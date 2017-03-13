@@ -1,0 +1,62 @@
+
+# Create Ubuntu system user
+sudo adduser --system --home=/opt/odoo --group odoo
+
+sudo su - postgres
+
+create psql User/Role with the same name
+
+createuser --createdb --username postgres --no-createrole --no-superuser --pwprompt odoo
+
+#set permission of etc with this username
+sudo chown odoo: /etc/odoo-server.confsudo chown kreol: /etc/orchiderp-kreol-live-server.confsudo chown kreol: /etc/orchiderp-kreol-live-server.conf
+sudo chmod 640 /etc/odoo-server.conf
+
+db_user= odoo
+
+in /etc/init.d/odoo-server
+change the User = odoo
+
+
+
+#kreol change the dbuser orchiderp to kreol
+===============================================================
+first backup db in dump format
+
+sudo adduser --system --home=/opt/kreol --group kreol
+sudo su - postgres
+createuser -s kreol
+psql
+#change the db name
+ALTER DATABASE name RENAME TO new_name;
+
+\l
+
+ALTER DATABASE kreol_live RENAME TO kreol_live_user_orchiderp;
+sudo adduser --system --home=/opt/kreol --group kreol
+ 
+create database kreol_live with template kreol_live_user_orchiderp owner kreol;
+
+ 
+ pwd: OrchidPWD
+ exit 
+ cd /etc
+nano orchiderp-kreol-live-server.conf
+db_user = kreol
+sudo chown kreol: /etc/orchiderp-kreol-live-server.conf
+nano init.d/orchiderp-kreol-live-server
+USER = kreol
+systemctl daemon-reload
+======================================================================
+
+mrlight orchiderp  to mrlight
+-----------------------------
+
+sudo adduser --system --home=/opt/mrlight --group mrlight
+sudo su - postgres
+createuser -s mrlight
+psql
+
+create database mrlight_live with template mrlight_live_orchiderp owner mrlight;
+
+

@@ -1,0 +1,23 @@
+
+cd /etc/systemd/system 
+sudo nano orchiderp-butterfly-live1-server.service
+
+[Unit]
+Description=OrchidERP
+Documentation=http://www.orchiderp.com/
+
+[Service]
+# Ubuntu/Debian convention:
+Type=simple
+User=orchiderp
+ExecStart=/opt/orchiderp/butterfly/live1/odoo/odoo-bin -c /etc/orchiderp-butterfly-live1-server.conf
+
+[Install]
+WantedBy=default.target
+
+
+sudo systemctl daemon-reload
+systemctl enable my_systemd_script.service
+systemctl start my_systemd_script.service
+
+systemctl start butterfly-live2.service

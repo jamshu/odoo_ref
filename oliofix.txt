@@ -1,0 +1,2 @@
+delete from ir_model_access where name = 'website';
+update ir_module_module set state='uninstalled' where name='website'

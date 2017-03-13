@@ -1,0 +1,76 @@
+#Author Jamshid K
+Adding Extra values from Sale order to PIcking in V10
+---------------------------------------------------------------
+
+Sale order and Picking has no direct link
+
+for each sale order and item lines from sale order line corresponding values stored 
+in Procurement Group  model 'procurment.group' and 
+sale order lines are  stored in procurment.order
+
+procurment.order is the line item of procurment.group
+
+[sale.order ->Sale.order.line] == ['procurment.group' --> procurment.order]
+
+
+
+the Import thing is [pikcing- >stock_move] -->Actually Stock Move first create then only creating picking_id,then picking id write in stock move 
+
+check the function
+
+@api.multi
+    def assign_picking(self):
+        """ Try to assign the moves to an existing picking that has not been
+        reserved yet and has the same procurement group, locations and picking
+        type (moves should already have them identical). Otherwise, create a new
+        picking to assign them to. """
+        Picking = self.env['stock.picking']
+        for move in self:
+            picking = Picking.search([
+                ('group_id', '=', move.group_id.id),
+                ('location_id', '=', move.location_id.id),
+                ('location_dest_id', '=', move.location_dest_id.id),
+                ('picking_type_id', '=', move.picking_type_id.id),
+                ('printed', '=', False),
+                ('state', 'in', ['draft', 'confirmed', 'waiting', 'partially_available', 'assigned'])], limit=1)
+            if not picking:
+                picking = Picking.create(move._get_new_picking_values())
+            move.write({'picking_id': picking.id})
+        return True
+    _picking_assign = assign_picking
+    
+
+so if we and add a field from sale.order to picking
+
+we need add a field in procurment.group
+
+then we need to pass value to procurment.group create in sale.order object function
+
+    @api.model
+    def _prepare_procurement_group(self):
+        return {'name': self.name}
+    
+after we need to override stock_move function:
+    
+    def _get_new_picking_values(self):
+        """ Prepares a new picking for this move as it could not be assigned to
+        another picking. This method is designed to be inherited. """
+        res = super(StockMove,self)._get_new_picking_values()
+        
+        od_carton_no = self.group_id and self.group_id.od_carton_no
+        od_packaging_no = self.group_id and self.group_id.od_packaging_no
+        res.update({'od_carton_no':od_carton_no,'od_packaging_no':od_packaging_no})
+        return res
+
+
+for adding new value from sale order line to stock moves
+we need to add field in procurment.order
+
+then we need to override  sale.order.line function
+
+    @api.multi
+    def _prepare_order_line_procurement(self, group_id=False):
+        res = super(SaleLine,self)._prepare_order_line_procurement(group_id)
+        res.update({'od_carton_no':self.od_carton_no,'od_packaging_no':self.od_packaging_no})
+        return res
+
