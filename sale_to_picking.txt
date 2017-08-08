@@ -73,4 +73,11 @@ then we need to override  sale.order.line function
         res = super(SaleLine,self)._prepare_order_line_procurement(group_id)
         res.update({'od_carton_no':self.od_carton_no,'od_packaging_no':self.od_packaging_no})
         return res
+        
+    then over ride and add value
+    function in the object procurement.order
+    
+     def _get_stock_move_values(self):
+        ''' Returns a dictionary of values that will be used to create a stock move from a procurement.
+        This function assumes that the given procurement has a rule (action == 'move') set on it.
 

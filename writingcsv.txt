@@ -1,0 +1,6 @@
+import csv
+#             file1 = open('crews.csv','a')
+#             fieldnames = ['date','crw_exemption','ft','airport_id','fdp','apt_exemption','crew_id','duty_count']
+#             writer = csv.DictWriter(file1, fieldnames=fieldnames)
+#             writer.writeheader()
+#             writer.writerow(value)

@@ -1,5 +1,21 @@
 # -*- coding: utf-8 -*-
 
+
+	def get_internal_location(self):
+		cr = self.env.cr
+		query = """ select id from stock_location where usage='internal' """
+		cr.execute(query)
+		result = cr.fetchall()
+		res = [r[0] for r in result]
+		return res
+  
+  
+  def execute_query(self,query,params):
+        cr = self.env.cr
+        cr.execute(query,params)
+        res = cr.fetchall()
+        return res
+  
   
   
   <xpath expr="//notebook[last()]" position="inside">

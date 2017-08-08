@@ -27,3 +27,7 @@ python odoo/odoo-bin --addons-path=/opt/orchiderp/butterfly/live/odoo/odoo/addon
  python odoo/odoo-bin --addons-path=/opt/orchiderp/butterfly/test/odoo/odoo/addons,/opt/orchiderp/butterfly/test/odoo/addons,/opt/orchiderp/butterfly/test/orchid --xmlrpc-port=5055 --db-filter=butterfly_test
  
  python odoo/odoo-bin --addons-path=/opt/orchiderp/butterfly/live/odoo/odoo/addons,/opt/orchiderp/butterfly/live/odoo/addons,/opt/orchiderp/butterfly/live/orchid --xmlrpc-port=5050 -d butterfly_live -u orchid_sale_enhancement
+ 
+ 
+ python odoo/odoo-bin --addons-path=/opt/orchiderp/flynxt_demo/odoo/odoo/addons,/opt/orchiderp/flynxt_demo/odoo/addons,/opt/orchiderp/flynxt_demo/flynxt --xmlrpc-port=4040 -d demo_fly -u flight_admin
+

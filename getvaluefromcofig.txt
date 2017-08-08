@@ -1,0 +1,2 @@
+def get_config_value(self,key):
+        return self.env['ir.values'].get_default('crew.config.settings', key)

@@ -1,0 +1,6 @@
+import pytz
+def get_offset_hours(self):
+        _from_date = datetime.today()
+        tz = pytz.timezone(self._context.get('tz'))
+        tzoffset = tz.utcoffset(_from_date)
+        return tzoffset

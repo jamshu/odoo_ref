@@ -1,0 +1,13 @@
+sudo su - orchiderp -s /bin/bash
+scp orchid@139.59.60.231:/opt/orchiderp/fzkreol.tar.gz .
+Kreol#2017
+tar zxvf kreol.tar.gz
+exit
+cd /etc
+
+sudo chown orchiderp: /etc/orchiderp-kreol-live-server.conf
+sudo chmod 640 /etc/orchiderp-kreol-live-server.conf
+sudo chmod 755 /etc/init.d/orchiderp-kreol-live-server
+sudo chown root: /etc/init.d/orchiderp-kreol-live-server
+sudo chmod +x /etc/init.d/orchiderp-live-server
+sudo update-rc.d orchiderp-live-server defaults
